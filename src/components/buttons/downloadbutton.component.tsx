@@ -47,7 +47,7 @@ function DownloadButton(props: DownloadButtonProps) {
 
       props.onComplete?.();
     }
-  }, [progress, redownloadTimeout, downloadState])
+  }, [progress, redownloadTimeout, downloadState, props])
 
   let component;
   switch (downloadState) {
