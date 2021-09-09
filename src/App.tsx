@@ -21,6 +21,7 @@ function App() {
   }
 
   const handleDownloadComplete = () => {
+    setProgress(0);
     clearInterval(timer);
   }
 
