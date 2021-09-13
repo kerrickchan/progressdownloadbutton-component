@@ -1,5 +1,6 @@
 import React from 'react';
 import './App.css';
+import LinearDownloadButton from './components/buttons/lineardownloadbutton.component';
 import DownloadButton from './components/buttons/downloadbutton.component';
 
 function App() {
@@ -34,6 +35,14 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
+        <LinearDownloadButton
+          progress={progress}
+          onClick={handleDownloadStart}
+          onComplete={handleDownloadComplete}
+          onDownloadResume={handleDownloadResume}
+        >
+          {word}
+        </LinearDownloadButton>
         <DownloadButton
           progress={progress}
           onClick={handleDownloadStart}
