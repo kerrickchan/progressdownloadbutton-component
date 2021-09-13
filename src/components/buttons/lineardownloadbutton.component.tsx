@@ -32,9 +32,11 @@ function LinearDownloadButton(props: LinearDownloadButtonProps) {
   const { children, progress, downloadResumeTimeout } = props;
 
   const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setDownloadState('downloading');
+    if (downloadState === 'button') {
+      setDownloadState('downloading');
 
-    props.onClick?.(event);
+      props.onClick?.(event);
+    }
   }
 
   useEffect(() => {

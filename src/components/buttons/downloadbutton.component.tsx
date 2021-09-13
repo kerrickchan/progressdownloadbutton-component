@@ -4,25 +4,36 @@ import Button from '@material-ui/core/Button';
 import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded';
 import AutorenewRoundedIcon from '@material-ui/icons/AutorenewRounded';
 import DoneRoundedIcon from '@material-ui/icons/DoneRounded';
-import { isClassExpression } from 'typescript';
 
 const useStyles = makeStyles<Theme, DownloadButtonProps>((theme) => ({
-  download: (props) => ({
+  button: (props) => ({}),
+  icon: (props) => ({}),
+  downloadingIcon: (props) => ({
+    animation: `spin 4s linear infinite`,
   }),
-  wait: (props) => ({
-  }),
-  progress: (props) => ({
-  }),
-  progressIcon: (props) => ({
-    animation: 'spin 4s linear infinite',
-  }),
-  complete: (props) => ({
-  }),
+  '@global': {
+    '@keyframes spin': {
+      '0%': {
+        opacity: 0.5,
+        transform: 'rotate(0deg)',
+      },
+      '50%': {
+        opacity: 1,
+        transform: 'rotate(180deg)',
+      },
+      '100%': {
+        opacity: 0.5,
+        transform: 'rotate(360deg)',
+      },
+    },
+  },
 }));
 
 export interface DownloadButtonProps {
+  className?: string;
+  style?: React.CSSProperties;
   children?: ReactNode;
-  progress?: number;
+  progress: number;
   downloadResumeTimeout?: number;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   onComplete?: () => void;
@@ -37,16 +48,22 @@ function DownloadButton(props: DownloadButtonProps) {
   const { progress, downloadResumeTimeout } = props;
 
   const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setDownloadState('downloading');
+    if (downloadState === 'button') {
+      setDownloadState('downloading');
 
-    props.onClick?.(event);
+      props.onClick?.(event);
+    }
   }
 
   useEffect(() => {
+    if (progress && progress > 0 && progress < 100 && downloadState !== 'downloading') {
+      setDownloadState('downloading');
+    }
+
     if (progress && progress >= 100 && downloadState === 'downloading') {
       setDownloadState('complete');
       props.onComplete?.();
-  
+
       setTimeout(() => {
         setDownloadState('button');
         props.onDownloadResume?.();
@@ -54,34 +71,24 @@ function DownloadButton(props: DownloadButtonProps) {
     }
   }, [progress, downloadState, downloadResumeTimeout, props])
 
-  let component;
+  let icon;
   switch (downloadState) {
     case 'button':
-      component = <Button className={classes.download} variant='outlined' color='primary' onClick={handleButtonClick}><GetAppRoundedIcon /></Button>
+      icon = <GetAppRoundedIcon className={classes.icon} />
       break;
     case 'downloading':
-      component = progress && progress > 0 && progress < 100?
-        <Button className={classes.progress} style={{}} variant='outlined' color='primary' onClick={handleButtonClick}><AutorenewRoundedIcon className={classes.progressIcon} /></Button> :
-        <Button className={classes.wait} variant='outlined' color='primary' onClick={handleButtonClick}><AutorenewRoundedIcon className={classes.progressIcon} /></Button>
+      icon = <AutorenewRoundedIcon className={classes.icon + ' ' + classes.downloadingIcon} />
       break;
     case 'complete':
-      component = <Button className={classes.complete} variant='outlined' color='primary'><DoneRoundedIcon /></Button>
+      icon = <DoneRoundedIcon className={classes.icon} />
       break;
   }
 
-  return <>
-    <style>
-      {
-        `
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `
-      }
-    </style>
-    {component}
-  </>
+  return (
+    <Button className={classes.button + (props.className ? ' ' + props.className : '')} style={props.style} variant='outlined' color='primary' onClick={handleButtonClick}>
+      {icon}
+    </Button>
+  )
 }
 
 DownloadButton.defaultProps = {

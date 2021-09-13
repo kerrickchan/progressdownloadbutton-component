@@ -5,7 +5,6 @@ import DownloadButton from './components/buttons/downloadbutton.component';
 
 function App() {
   const [progress, setProgress] = React.useState<number>(0);
-  const [word, setWord] = React.useState<string>('Download');
   const [timer, setTimer] = React.useState<NodeJS.Timeout>({} as NodeJS.Timeout);
   
   const handleDownloadStart = () => {
@@ -23,12 +22,10 @@ function App() {
   }
 
   const handleDownloadComplete = () => {
-    setWord('Complete');
     clearInterval(timer);
   }
 
   const handleDownloadResume = () => {
-    setWord('Download');
     setProgress(0);
   }
 
@@ -41,7 +38,6 @@ function App() {
           onComplete={handleDownloadComplete}
           onDownloadResume={handleDownloadResume}
         >
-          {word}
         </LinearDownloadButton>
         <DownloadButton
           progress={progress}
@@ -49,7 +45,6 @@ function App() {
           onComplete={handleDownloadComplete}
           onDownloadResume={handleDownloadResume}
         >
-          {word}
         </DownloadButton>
       </header>
     </div>
