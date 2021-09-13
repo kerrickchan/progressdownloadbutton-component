@@ -18,9 +18,10 @@ const useStyles = makeStyles<Theme, DownloadButtonProps>((theme) => ({
 export interface DownloadButtonProps {
   children?: ReactNode;
   progress?: number;
-  redownloadTimeout: number;
+  downloadResumeTimeout?: number;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   onComplete?: () => void;
+  onDownloadResume?: () => void;
 }
 
 export type DownloadButtonState = 'button' | 'downloading' | 'complete';
@@ -28,6 +29,7 @@ export type DownloadButtonState = 'button' | 'downloading' | 'complete';
 function DownloadButton(props: DownloadButtonProps) {
   const classes = useStyles(props);
   const [downloadState, setDownloadState] = useState<DownloadButtonState>('button');
+  const { children, progress, downloadResumeTimeout } = props;
 
   const handleButtonClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setDownloadState('downloading');
@@ -35,19 +37,17 @@ function DownloadButton(props: DownloadButtonProps) {
     props.onClick?.(event);
   }
 
-  const { children, progress, redownloadTimeout } = props;
-
   useEffect(() => {
     if (progress && progress >= 100 && downloadState === 'downloading') {
       setDownloadState('complete');
+      props.onComplete?.();
   
       setTimeout(() => {
         setDownloadState('button');
-      }, redownloadTimeout);
-
-      props.onComplete?.();
+        props.onDownloadResume?.();
+      }, downloadResumeTimeout);
     }
-  }, [progress, redownloadTimeout, downloadState, props])
+  }, [progress,downloadState, downloadResumeTimeout, props])
 
   let component;
   switch (downloadState) {
@@ -69,7 +69,7 @@ function DownloadButton(props: DownloadButtonProps) {
 
 DownloadButton.defaultProps = {
   progress: 0,
-  redownloadTimeout: 3000,
+  downloadResumeTimeout: 3000,
 }
 
 export default DownloadButton;
