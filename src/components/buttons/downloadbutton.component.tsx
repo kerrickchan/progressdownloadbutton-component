@@ -6,10 +6,12 @@ import AutorenewRoundedIcon from '@material-ui/icons/AutorenewRounded';
 import DoneRoundedIcon from '@material-ui/icons/DoneRounded';
 
 const useStyles = makeStyles<Theme, DownloadButtonProps>((theme) => ({
-  button: (props) => ({}),
+  button: (props) => ({
+    background: props.progress === 0 ? 'transparent' : `linear-gradient(to right, ${theme.palette.secondary.main} ${props.progress}%, transparent ${props.progress}%, transparent ${100 - props.progress}%)`,
+  }),
   icon: (props) => ({}),
   downloadingIcon: (props) => ({
-    animation: `spin 4s linear infinite`,
+    animation: `spin 2s linear infinite`,
   }),
   '@global': {
     '@keyframes spin': {
